@@ -29,7 +29,9 @@ export default function SmoothScroll() {
 
     const raf = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
+    // Keep GSAP's default catch-up guard; disabling it made a dropped frame
+    // (tab switch, heavy paint) snap the scroll-linked animations forward.
+    gsap.ticker.lagSmoothing(500, 33);
 
     // Hard refresh must always start at the very top: kill browser scroll
     // restoration, any leftover hash, and ScrollTrigger's scroll memory.

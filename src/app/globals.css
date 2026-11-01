@@ -67,11 +67,11 @@ body {
 }
 
 .hero-enter {
-  animation: hero-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-enter-fade {
-  animation: hero-fade 1.1s ease-out both;
+  animation: hero-fade 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .hero-delay-1 {
@@ -85,6 +85,27 @@ body {
 }
 .hero-delay-4 {
   animation-delay: 0.42s;
+}
+
+/* Reserved space while SplitText prepares the line masks. */
+.reveal-pending {
+  opacity: 0;
+}
+
+@keyframes menu-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.menu-drop {
+  transform-origin: top center;
+  animation: menu-drop 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ---- Luxury Splash Screen 3D Turnaround & Color Infusion ---- */
@@ -191,11 +212,11 @@ body {
 }
 
 .animate-smooth-slide-up {
-  animation: logo-smooth-slide-up 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: logo-smooth-slide-up 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-purple-color-infusion {
-  animation: logo-purple-reveal 1.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: logo-purple-reveal 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 .animate-flash-burst {
@@ -247,7 +268,6 @@ body {
   width: 200%;
   height: 100%;
   pointer-events: none;
-  will-change: transform;
 }
 
 .cloud-slice {
@@ -267,7 +287,15 @@ body {
 
 .cloud-track-primary {
   z-index: 2;
-  animation: cloud-drift-primary 95s linear infinite;
+  animation: cloud-drift-primary 95s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+/* The hero keeps animating behind the content long after it is covered.
+   Pause the ambient layers once the page has moved on so they do not steal
+   frames from the pinned sections below. */
+.hero-paused .cloud-track,
+.hero-paused .plant {
+  animation-play-state: paused;
 }
 
 .cloud-track-secondary {
@@ -275,7 +303,7 @@ body {
   top: -8%;
   opacity: 0.52;
   filter: blur(1.5px);
-  animation: cloud-drift-secondary 160s linear infinite;
+  animation: cloud-drift-secondary 160s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 }
 
 .cloud-img-secondary {
@@ -406,7 +434,6 @@ body {
   transform-box: view-box;
   transform-origin: 0 0;
   animation: stalk-sway var(--dur) ease-in-out var(--delay) infinite alternate;
-  will-change: transform;
 }
 
 .daisy {
@@ -484,12 +511,18 @@ body {
   pointer-events: none;
 }
 
-/* Cards get promote-hints only while the section is actually pinned. */
-.is-pin-active .flip-inner {
+/* Promote only the layers that are actually animating right now. */
+.is-flipping .flip-inner {
   will-change: transform;
 }
 
 .is-pin-active .folder-card {
+  will-change: transform, opacity;
+}
+
+/* The pricing ticker writes transforms every frame while the section is in
+   view; keep the promote hint scoped to that window. */
+.pricing-active .pricing-photo {
   will-change: transform, opacity;
 }
 
@@ -512,8 +545,18 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .hero-enter,
-  .hero-enter-fade {
-    animation: none;
+  .hero-enter-fade,
+  .animate-logo-360,
+  .animate-color-reveal,
+  .animate-light-catch,
+  .animate-ambient-pulse,
+  .animate-smooth-slide-up,
+  .animate-purple-color-infusion,
+  .animate-flash-burst,
+  .animate-flip-360,
+  .animate-flip-360-fast,
+  .menu-drop {
+    animation: none !important;
   }
   /* Grass keeps its shape but stops swaying. */
   .hero-grass .plant {
@@ -524,33 +567,4 @@ body {
   .hero-k-logo-img {
     animation: none !important;
   }
-  .animate-flip-360 {
-    animation: none !important;
-  }
 }
-
-/* ---- CEO Quote Word Gradient Reveal ---- */
-.word-gradient {
-  display: inline-block;
-  background-image: linear-gradient(
-    90deg,
-    #2d2f33 0%,
-    #2d2f33 33.3%,
-    #b9b9b9 66.7%,
-    #b9b9b9 100%
-  );
-  background-size: 300% 100%;
-  background-position: 100% 0%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #b9b9b9;
-  will-change: background-position;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .word-gradient {
-    background-position: 0% 0% !important;
-  }
-}
-

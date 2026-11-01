@@ -102,7 +102,7 @@ export default function ClientReviewSection({ enabled = true }: { enabled?: bool
           tl.fromTo(
             rail,
             { x: compact ? 0 : RAIL_START },
-            { x: compact ? -COMPACT_RAIL_MOVE : RAIL_START - RAIL_MOVE, ease: "none" },
+            { x: compact ? -COMPACT_RAIL_MOVE : RAIL_START - RAIL_MOVE, ease: "power1.inOut" },
             0,
           );
 
@@ -262,7 +262,7 @@ export default function ClientReviewSection({ enabled = true }: { enabled?: bool
                 type="button"
                 aria-label="Previous reviews"
                 onClick={() => window.scrollBy({ top: -window.innerHeight, behavior: "smooth" })}
-                className="flex size-[84px] items-center justify-center rounded-full bg-[#f1f1f1] text-[#2d2f33] transition-opacity hover:opacity-80"
+                className="flex size-[84px] items-center justify-center rounded-full bg-[#f1f1f1] text-[#2d2f33] transition-opacity duration-200 hover:opacity-80"
               >
                 <svg viewBox="0 0 24 24" fill="none" className="size-[21px]" stroke="currentColor" strokeWidth="2">
                   <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
@@ -343,13 +343,13 @@ function ReviewCard({
         alt=""
         fill
         sizes={compact ? "250px" : "454px"}
-        className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-0 ${
+        className={`pointer-events-none absolute inset-0 h-full w-full object-cover transition-opacity duration-200 group-hover:opacity-0 ${
           isPlaying ? "opacity-0" : "opacity-100"
         }`}
       />
 
       {/* Play button */}
-      <div className="pointer-events-none absolute inset-x-0 top-[32.26%] flex justify-center transition-opacity duration-300 group-hover:opacity-0">
+      <div className="pointer-events-none absolute inset-x-0 top-[32.26%] flex justify-center transition-opacity duration-200 group-hover:opacity-0">
         <div className="flex size-[117px] items-center justify-center rounded-full border border-white/60 bg-white/30 backdrop-blur-md max-sm:size-[70px]">
           <svg viewBox="0 0 24 24" fill="white" className="size-[56px] translate-x-1 max-sm:size-[32px]">
             <polygon points="5 3 19 12 5 21 5 3" />

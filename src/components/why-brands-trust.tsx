@@ -83,7 +83,7 @@ export default function WhyBrandsTrustSection({ enabled = true }: { enabled?: bo
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-[23px] lg:col-span-7">
             {/* Card 1: Conversion-Driven UI/UX */}
             <div
-              className="trust-card group relative flex min-h-[420px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] p-8 lg:p-10 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_16px_36px_rgba(233,107,15,0.22)] hover:-translate-y-1"
+              className="trust-card group relative flex min-h-[420px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] p-8 lg:p-10 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] transition-[translate,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_16px_36px_rgba(233,107,15,0.22)] hover:-translate-y-1"
               style={{
                 backgroundImage:
                   "radial-gradient(circle at center, rgb(251, 175, 120) 0%, rgb(242, 141, 67) 50%, rgb(238, 124, 41) 75%, rgb(233, 107, 15) 100%)",
@@ -98,7 +98,7 @@ export default function WhyBrandsTrustSection({ enabled = true }: { enabled?: bo
             </div>
 
             {/* Card 2: Rapid Agile Delivery */}
-            <div className="trust-card group relative flex min-h-[420px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] bg-[#ebf86f] p-8 lg:p-10 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] transition-all duration-300 hover:shadow-[0_16px_36px_rgba(235,248,111,0.35)] hover:-translate-y-1">
+            <div className="trust-card group relative flex min-h-[420px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] bg-[#ebf86f] p-8 lg:p-10 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] transition-[translate,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_16px_36px_rgba(235,248,111,0.35)] hover:-translate-y-1">
               <h3 className="font-['Satoshi'] text-[30px] sm:text-[34px] lg:text-[40px] font-medium leading-[1.2] text-black">
                 Rapid Agile Delivery
               </h3>
@@ -112,7 +112,7 @@ export default function WhyBrandsTrustSection({ enabled = true }: { enabled?: bo
         {/* Bottom Row: Wide Card (1216px) + Dark Card (525px) */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-[23px] items-stretch mt-0 lg:mt-2">
           {/* Card 3: Future-Proof Code That Scales (Spans 8 cols on desktop) */}
-          <div className="trust-card group relative flex min-h-[440px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] bg-[#7d91f5] p-8 lg:p-11 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] lg:col-span-8 transition-all duration-300 hover:shadow-[0_16px_36px_rgba(125,145,245,0.3)] hover:-translate-y-1">
+          <div className="trust-card group relative flex min-h-[440px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] bg-[#7d91f5] p-8 lg:p-11 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] lg:col-span-8 transition-[translate,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_16px_36px_rgba(125,145,245,0.3)] hover:-translate-y-1">
             <div className="relative z-10 max-w-[420px] lg:max-w-[460px]">
               <h3 className="font-['Satoshi'] text-[30px] sm:text-[36px] lg:text-[40px] font-medium leading-[1.2] text-white">
                 Future-Proof Code That Scales
@@ -132,15 +132,15 @@ export default function WhyBrandsTrustSection({ enabled = true }: { enabled?: bo
                 alt="Code Architecture Mockup"
                 fill
                 sizes="(max-width: 1024px) 50vw, 724px"
-                className="object-contain object-right-bottom transition-transform duration-500 group-hover:scale-105"
+                className="object-contain object-right-bottom transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
               />
             </div>
           </div>
 
           {/* Card 4: Ultra-Fast Speed (Spans 4 cols on desktop) */}
-          <div className="trust-card group relative flex min-h-[420px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] bg-[#0d1f1f] p-8 lg:p-10 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] lg:col-span-4 transition-all duration-300 hover:shadow-[0_16px_36px_rgba(13,31,31,0.5)] hover:-translate-y-1">
+          <div className="trust-card group relative flex min-h-[420px] lg:min-h-[484px] flex-col justify-between overflow-hidden rounded-[20px] bg-[#0d1f1f] p-8 lg:p-10 shadow-[0px_1px_4px_rgba(0,0,0,0.08)] lg:col-span-4 transition-[translate,box-shadow] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:shadow-[0_16px_36px_rgba(13,31,31,0.5)] hover:-translate-y-1">
             {/* Background Wave Graphic */}
-            <div className="pointer-events-none absolute inset-0 opacity-80 mix-blend-screen transition-opacity duration-500 group-hover:opacity-100">
+            <div className="pointer-events-none absolute inset-0 opacity-80 mix-blend-screen transition-opacity duration-200 group-hover:opacity-100">
               <Image
                 src="/why-trust/40191.svg"
                 alt="Wave"

@@ -27,6 +27,7 @@ export default function Home() {
   const [heroEntered, setHeroEntered] = useState(false);
   const [splashFinished, setSplashFinished] = useState(false);
   const [scrolledPastHero, setScrolledPastHero] = useState(false);
+  const [heroCovered, setHeroCovered] = useState(false);
   // The floating dock flips to a white pill while a dark service card is on screen.
   const [dockInverted, setDockInverted] = useState(false);
 
@@ -77,18 +78,38 @@ export default function Home() {
   }, [splashFinished]);
 
   useEffect(() => {
-    const handleScroll = () => {
-      // When scrolled down past hero main view (550px), vanish top nav and reveal bottom dock
-      if (window.scrollY > 550) {
-        setScrolledPastHero(true);
-      } else {
-        setScrolledPastHero(false);
+    // One rAF-throttled scroll listener instead of a setState on every event.
+    let frame = 0;
+    let last: boolean | null = null;
+    let lastCovered: boolean | null = null;
+
+    const update = () => {
+      frame = 0;
+      const y = window.scrollY;
+      const next = y > 550;
+      if (next !== last) {
+        last = next;
+        setScrolledPastHero(next);
+      }
+      // Pause the hero ambient loops only once the company section has fully
+      // covered it; pausing at 550px would freeze clouds still in view.
+      const covered = y > 1050;
+      if (covered !== lastCovered) {
+        lastCovered = covered;
+        setHeroCovered(covered);
       }
     };
 
+    const handleScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    update();
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
@@ -109,6 +130,7 @@ export default function Home() {
           <HeroSection
             isEntered={heroEntered}
             isNavVisible={!scrolledPastHero}
+            paused={heroCovered}
           />
         </div>
 

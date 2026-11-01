@@ -274,6 +274,9 @@ export default function HowWeWorkSection({ enabled = true }: { enabled?: boolean
               scrub: 1.05,
               anticipatePin: 1,
               invalidateOnRefresh: true,
+              onToggle: (self) => {
+                rootRef.current?.classList.toggle("is-pin-active", self.isActive);
+              },
             },
           });
 
@@ -293,6 +296,7 @@ export default function HowWeWorkSection({ enabled = true }: { enabled?: boolean
           // Release the pin as soon as the last card settles — no static hold.
 
           return () => {
+            rootRef.current?.classList.remove("is-pin-active");
             tl.scrollTrigger?.kill();
             tl.kill();
           };

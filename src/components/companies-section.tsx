@@ -89,8 +89,9 @@ export default function CompaniesSection({ enabled = true }: { enabled?: boolean
   useEffect(() => {
     if (!enabled) return;
 
+    const root = rootRef.current;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const cards = gsap.utils.toArray<HTMLElement>(".flip-inner", rootRef.current);
+    const cards = gsap.utils.toArray<HTMLElement>(".flip-inner", root ?? undefined);
 
     if (reduce) {
       gsap.set(cards, { rotationY: 0 });
@@ -124,7 +125,9 @@ export default function CompaniesSection({ enabled = true }: { enabled?: boolean
 
       const sync = () => {
         if (!tl) return;
-        if (visible && !document.hidden) tl.play();
+        const active = visible && !document.hidden;
+        root?.classList.toggle("is-flipping", active);
+        if (active) tl.play();
         else tl.pause();
       };
 
@@ -136,7 +139,7 @@ export default function CompaniesSection({ enabled = true }: { enabled?: boolean
         },
         { threshold: 0.15 },
       );
-      if (rootRef.current) io.observe(rootRef.current);
+      if (root) io.observe(root);
 
       // …and when the tab is hidden.
       document.addEventListener("visibilitychange", sync);
@@ -147,6 +150,7 @@ export default function CompaniesSection({ enabled = true }: { enabled?: boolean
     return () => {
       ctx.revert();
       ioRef.current?.disconnect();
+      root?.classList.remove("is-flipping");
       document.removeEventListener("visibilitychange", syncRef.current ?? (() => {}));
       timelineRef.current = null;
     };

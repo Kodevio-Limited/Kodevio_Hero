@@ -97,7 +97,7 @@ function Row({ direction, compact }: { direction: "top" | "bottom"; compact: boo
           <div
             key={`${direction}-${idx}`}
             data-x={baseX}
-            className="pricing-photo absolute left-0 top-0 overflow-hidden rounded-[20px] bg-[#f8f9fa] will-change-transform"
+            className="pricing-photo absolute left-0 top-0 overflow-hidden rounded-[20px] bg-[#f8f9fa]"
             style={{
               width: `${g.w}px`,
               height: `${g.h}px`,
@@ -174,7 +174,7 @@ export default function PricingSection({ enabled = true }: { enabled?: boolean }
 
         // Entry offset: photos fade in while rising into the wave.
         items.forEach((item) => {
-          item.dy = 42;
+          item.dy = 32;
           gsap.set(item.el, { opacity: 0 });
         });
 
@@ -224,6 +224,7 @@ export default function PricingSection({ enabled = true }: { enabled?: boolean }
       const io = new IntersectionObserver(
         (entries) => {
           visible = entries[0]?.isIntersecting ?? false;
+          root.classList.toggle("pricing-active", visible);
           if (visible) playEntry();
         },
         { rootMargin: "120px 0px" },
@@ -241,9 +242,9 @@ export default function PricingSection({ enabled = true }: { enabled?: boolean }
         const row = runtime[i];
         if (!row) return;
         const enter = () =>
-          gsap.to(row.speed, { value: 0.3, duration: 0.6, ease: "power2.out", overwrite: true });
+          gsap.to(row.speed, { value: 0.3, duration: 0.22, ease: "power2.out", overwrite: true });
         const leave = () =>
-          gsap.to(row.speed, { value: 1, duration: 0.6, ease: "power2.out", overwrite: true });
+          gsap.to(row.speed, { value: 1, duration: 0.22, ease: "power2.out", overwrite: true });
         rowEl.addEventListener("pointerenter", enter);
         rowEl.addEventListener("pointerleave", leave);
         offs.push(() => {
@@ -254,6 +255,7 @@ export default function PricingSection({ enabled = true }: { enabled?: boolean }
 
       return () => {
         gsap.ticker.remove(tick);
+        root.classList.remove("pricing-active");
         io.disconnect();
         document.removeEventListener("visibilitychange", onVisibility);
         offs.forEach((off) => off());

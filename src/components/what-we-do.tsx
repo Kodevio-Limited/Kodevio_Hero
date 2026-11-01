@@ -87,7 +87,13 @@ export default function WhatWeDoSection({
           1,
           Math.max(0, (progress * TIMELINE_UNITS - RAIL_START_AT) / RAIL_DURATION),
         );
-        const railX = railStartX() + (railEndX() - railStartX()) * railProgress;
+        // Match the rail tween's power1.inOut ease so the dock flips exactly
+        // when the card under it changes.
+        const eased =
+          railProgress < 0.5
+            ? 2 * railProgress * railProgress
+            : 1 - Math.pow(-2 * railProgress + 2, 2) / 2;
+        const railX = railStartX() + (railEndX() - railStartX()) * eased;
         // The screen point the dock sits over, expressed in the rail's design
         // coordinates (the rail is scaled by CSS `zoom`).
         const center = window.innerWidth / (2 * zoom) - railX;
@@ -119,7 +125,7 @@ export default function WhatWeDoSection({
       gsap.to(lines, {
         yPercent: 0,
         opacity: 1,
-        ease: "none",
+        ease: "power2.out",
         stagger: 0.1,
         duration: 0.7,
         scrollTrigger: {
@@ -155,7 +161,7 @@ export default function WhatWeDoSection({
       });
 
       tl.to(stage, { opacity: 0, ease: "power2.in", duration: 0.35 }, 0)
-        .to(rail, { x: () => railEndX(), ease: "none", duration: RAIL_DURATION }, RAIL_START_AT);
+        .to(rail, { x: () => railEndX(), ease: "power1.inOut", duration: RAIL_DURATION }, RAIL_START_AT);
     }, rootRef);
 
     return () => {
@@ -186,7 +192,7 @@ export default function WhatWeDoSection({
           <h2 className="w-full font-['Poppins',sans-serif] text-[34px] font-medium leading-[1.4] text-white sm:text-[46px] lg:text-[60px]">
             {LINES.map((line, idx) => (
               <span key={idx} className="block overflow-hidden py-[2px]">
-                <span className="what-line block will-change-transform">{line}</span>
+                <span className="what-line block">{line}</span>
               </span>
             ))}
           </h2>

@@ -62,12 +62,19 @@ function QuoteMark({ className = "" }: { className?: string }) {
   );
 }
 
-/* Smooth gradient reveal word: background-clip text with progressive gradient
- * that travels across each word with scroll. */
+/* Word reveal built from a gray base and a dark overlay. The overlay only
+ * changes opacity, so the whole quote stays on the compositor (no text paint
+ * or background-position animation). */
 function Word({ children }: { children: string }) {
   return (
-    <span className="word word-gradient relative mr-[0.25em] inline-block align-baseline font-medium">
-      {children}
+    <span className="word relative mr-[0.25em] inline-block align-baseline font-medium">
+      <span className="text-[#b9b9b9]">{children}</span>
+      <span
+        aria-hidden="true"
+        className="word-fill pointer-events-none absolute inset-0 text-[#2d2f33] opacity-0"
+      >
+        {children}
+      </span>
     </span>
   );
 }
@@ -258,7 +265,7 @@ export default function CeoSection({ enabled = true }: { enabled?: boolean }) {
 
           if (media.conditions?.isReduced) {
             // Final state, no pin, no animation.
-            gsap.set(scope.querySelectorAll(".word-gradient"), { backgroundPosition: "0% 0%" });
+            gsap.set(scope.querySelectorAll(".word-fill"), { opacity: 1 });
             gsap.set(dividers, { scaleX: 1, transformOrigin: "left center" });
             gsap.set(verticals, { scaleY: 1, transformOrigin: "top center" });
             gsap.set([...cards, ...brackets, ...units], { opacity: 1, y: 0 });
@@ -271,7 +278,7 @@ export default function CeoSection({ enabled = true }: { enabled?: boolean }) {
             return;
           }
 
-          const wordEls = gsap.utils.toArray<HTMLElement>(".word-gradient", scope);
+          const wordEls = gsap.utils.toArray<HTMLElement>(".word-fill", scope);
 
           // Stats components are visible from the start; count-up starts concurrently with text reveal
           gsap.set(dividers, { scaleX: 1, transformOrigin: "left center" });
@@ -282,7 +289,7 @@ export default function CeoSection({ enabled = true }: { enabled?: boolean }) {
           if (topRatedRef.current) gsap.set(topRatedRef.current, { yPercent: 0 });
 
           // Start words in the dim/unrevealed state
-          gsap.set(wordEls, { backgroundPosition: "100% 0%" });
+          gsap.set(wordEls, { opacity: 0 });
 
           /* ---- Stats count-up — runs concurrently when text reveal starts ---- */
           let statsPlayed = false;
@@ -343,13 +350,13 @@ export default function CeoSection({ enabled = true }: { enabled?: boolean }) {
             },
           });
 
-          /* ---- 1. Text gradient reveal — starts on the first pin pixel ---- */
+          /* ---- 1. Word reveal — starts on the first pin pixel ---- */
           tl.to(
             wordEls,
             {
-              backgroundPosition: "0% 0%",
+              opacity: 1,
               duration: 0.22,
-              stagger: 0.055,
+              stagger: 0.06,
               ease: "power1.out",
             },
             0

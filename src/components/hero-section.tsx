@@ -54,7 +54,7 @@ function CtaButton({
   return (
     <a
       href="#contact"
-      className={`relative z-30 flex h-[59px] cursor-pointer items-center justify-center gap-[3px] rounded-[57px] px-[34px] py-4 text-white transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98] ${className}`}
+      className={`relative z-30 flex h-[59px] cursor-pointer items-center justify-center gap-[3px] rounded-[57px] px-[34px] py-4 text-white transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] active:scale-[0.98] motion-reduce:transition-none ${className}`}
       style={{
         backgroundImage: BTN_GRADIENT,
         /* Figma: 0 4px 16.3px rgba(0,0,0,0.12) with spread 11 */
@@ -79,29 +79,51 @@ const NAV_LINKS = [
 export default function HeroSection({
   isEntered = true,
   isNavVisible = true,
+  paused = false,
 }: {
   isEntered?: boolean;
   isNavVisible?: boolean;
+  paused?: boolean;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [settled, setSettled] = useState(false);
   const copyRef = useRef<HTMLDivElement>(null);
   const [logoTop, setLogoTop] = useState<number>(455);
 
   useEffect(() => {
+    const copy = copyRef.current;
+    if (!copy) return;
+    let frame = 0;
+
     const updatePos = () => {
-      if (!copyRef.current) return;
-      const rect = copyRef.current.getBoundingClientRect();
-      const hero = copyRef.current.closest("#hero");
-      if (hero) {
-        const heroRect = hero.getBoundingClientRect();
-        const copyBottom = rect.bottom - heroRect.top;
-        // User requested: keep just a little bit of gap with Contact Us button (~26px)
-        setLogoTop(Math.round(copyBottom + 26));
-      }
+      frame = 0;
+      const hero = copy.closest("#hero");
+      if (!hero) return;
+      const rect = copy.getBoundingClientRect();
+      const heroRect = hero.getBoundingClientRect();
+      const copyBottom = rect.bottom - heroRect.top;
+      // Keep just a little gap with the Contact Us button (~26px). Re-measure
+      // when the copy block reflows (font load / resize) so the 3D logo never
+      // lands at a stale position.
+      setLogoTop(Math.round(copyBottom + 26));
     };
-    updatePos();
-    window.addEventListener("resize", updatePos);
-    return () => window.removeEventListener("resize", updatePos);
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(updatePos);
+    };
+
+    const ro = new ResizeObserver(schedule);
+    ro.observe(copy);
+    const hero = copy.closest("#hero");
+    if (hero) ro.observe(hero);
+    window.addEventListener("resize", schedule);
+    schedule();
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", schedule);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => {
@@ -119,11 +141,18 @@ export default function HeroSection({
       /* Full-bleed per Figma node 324:23968 — exact 1378px height on 1920px canvas.
          Requires scrolling through the full hero height, so the bottom dissolve
          is placed at the bottom of the 1378px hero and NOT visible on initial load. */
-      className={`relative w-full overflow-hidden transition-transform duration-[1250ms] ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform ${
+      className={`relative w-full overflow-hidden transition-transform duration-[1100ms] ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none ${
+        settled ? "" : "will-change-transform motion-reduce:will-change-auto"
+      } ${paused ? "hero-paused" : ""} ${
         isEntered
           ? "translate-y-0"
           : "translate-y-full"
       }`}
+      onTransitionEnd={(event) => {
+        if (event.target === event.currentTarget && (event.propertyName === "transform" || event.propertyName === "translate")) {
+          setSettled(true);
+        }
+      }}
       style={{
         /* Sky sampled straight from the original hero clip's poster frame
            (public/hero/hero-figma-2752.png), so the screen keeps the exact
@@ -281,7 +310,7 @@ export default function HeroSection({
 
       {/* ---------- Top nav bar (1159 × 75, radius 154) ---------- */}
       <header
-        className={`fixed top-[27px] left-1/2 z-40 w-[min(1159px,calc(100%-32px))] -translate-x-1/2 transition-all duration-300 ease-in-out ${
+        className={`fixed top-[27px] left-1/2 z-40 w-[min(1159px,calc(100%-32px))] -translate-x-1/2 transition-[transform,translate,scale,rotate,opacity] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
           isNavVisible
             ? "translate-y-0 opacity-100 pointer-events-auto"
             : "-translate-y-12 opacity-0 pointer-events-none"
@@ -311,7 +340,7 @@ export default function HeroSection({
               <li key={link.label}>
                 <a
                   href="#"
-                  className="flex items-center gap-[3px] font-[Satoshi] text-[20px] leading-[1.4] font-medium text-[#e9e9e9] transition-colors hover:text-white"
+                  className="flex items-center gap-[3px] font-[Satoshi] text-[20px] leading-[1.4] font-medium text-[#e9e9e9] transition-colors duration-200 hover:text-white"
                 >
                   {link.label}
                   {link.hasMenu && <ChevronDown />}
@@ -330,7 +359,7 @@ export default function HeroSection({
               onClick={() => setMenuOpen((v) => !v)}
               aria-expanded={menuOpen}
               aria-label={menuOpen ? "Close menu" : "Open menu"}
-              className="flex size-[59px] items-center justify-center rounded-full text-[#686868] transition-colors hover:bg-black/5 lg:hidden"
+              className="flex size-[59px] items-center justify-center rounded-full text-[#686868] transition-colors duration-200 hover:bg-black/5 lg:hidden"
               style={{ backgroundImage: BTN_GRADIENT }}
             >
               <svg
@@ -353,12 +382,12 @@ export default function HeroSection({
 
           {/* Mobile dropdown */}
           {menuOpen && (
-            <ul className="absolute top-[83px] right-0 left-0 flex flex-col gap-1 rounded-[24px] bg-white p-3 shadow-xl lg:hidden">
+            <ul className="menu-drop absolute top-[83px] right-0 left-0 flex flex-col gap-1 rounded-[24px] bg-white p-3 shadow-xl lg:hidden">
               {NAV_LINKS.map((link) => (
                 <li key={link.label}>
                   <a
                     href="#"
-                    className="flex items-center justify-between rounded-2xl px-5 py-3 font-[Satoshi] text-[18px] text-[#686868] hover:bg-black/5"
+                    className="flex items-center justify-between rounded-2xl px-5 py-3 font-[Satoshi] text-[18px] text-[#686868] transition-colors duration-200 hover:bg-black/5"
                   >
                     {link.label}
                     {link.hasMenu && <ChevronDown />}
